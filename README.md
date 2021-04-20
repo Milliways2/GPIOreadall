@@ -7,5 +7,5 @@ GPIOreadall runs on all Pi models with 40 pin expansion header, including Pi4 an
 
 GPIOreadall runs on Raspberry Pi OS Stretch and Buster and requires no additional libraries as it uses the raspi-gpio debug tool
 
-gpioreadall.py by default displays power pins in colour.
+gpioreadall.py by default displays power pins in colour.  
 To restore non-coloured output uncomment the 2 lines # non-coloured output and comment out # coloured output.
