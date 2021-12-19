@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 # 2021-04-02
 # 2021-04-13    Fix Wrong model for Old Style revision codes
+# 2021-12-19    Fix Wrong model when warranty void bit has been set
+
 """
 Read all GPIO
 This version for raspi-gpio debug tool
@@ -127,6 +129,7 @@ def get_hardware_revision():
 def main():
     global TYPE, rev
     rev = get_hardware_revision()
+    rev = (rev&0xF0FFFFFF) #disable warranty bit
     TYPE = (rev&0x00000FF0)>>4
     if(rev < 0x15+1):   # Old Style
         MM = [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3, 6, 2, 3, 6, 2]
