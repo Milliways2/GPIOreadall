@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # 2021-04-02
 # 2021-04-13    Fix Wrong model for Old Style revision codes
+# 2021-12-20    Improve Old Style revision codes; ignore unwanted status bits
 """
 Read all GPIO
 This version for raspi-gpio debug tool
@@ -127,8 +128,11 @@ def get_hardware_revision():
 def main():
     global TYPE, rev
     rev = get_hardware_revision()
-    TYPE = (rev&0x00000FF0)>>4
-    if(rev < 0x15+1):   # Old Style
+
+    if(rev & 0x800000):   # New Style
+        TYPE = (rev&0x00000FF0)>>4
+    else:   # Old Style
+        rev &= 0x1F
         MM = [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3, 6, 2, 3, 6, 2]
         TYPE = MM[rev] # Map Old Style revision to TYPE
 
