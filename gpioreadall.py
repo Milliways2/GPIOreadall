@@ -2,6 +2,7 @@
 # 2021-04-02
 # 2021-04-13    Fix Wrong model for Old Style revision codes
 # 2021-12-20    Improve Old Style revision codes; ignore unwanted status bits
+# 2022-03-25    Zero 2 W
 """
 Read all GPIO
 This version for raspi-gpio debug tool
@@ -12,6 +13,7 @@ import subprocess
 MODES=["IN", "OUT", "ALT5", "ALT4", "ALT0", "ALT1", "ALT2", "ALT3"]
 HEADER = ('3.3v', '5v', 2, '5v', 3, 'GND', 4, 14, 'GND', 15, 17, 18, 27, 'GND', 22, 23, '3.3v', 24, 10, 'GND', 9, 25, 11, 8, 'GND', 7, 0, 1, 5, 'GND', 6, 12, 13, 'GND', 19, 16, 26, 20, 'GND', 21)
 
+# https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes
 PiModel = {
 0: 'A',
 1: 'B',
@@ -27,6 +29,7 @@ PiModel = {
 0xe: '3A+',
 0x10: 'CM3+',
 0x11: '4B',
+0x12: 'Zero2W,
 0x13: '400',
 0x14: 'CM4'
 }
