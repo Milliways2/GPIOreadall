@@ -1,0 +1,19 @@
+# Remove Python3 links
+sudo rm    2to3
+sudo rm    idle3
+sudo rm    pip3
+sudo rm    pydoc3
+sudo rm    python3
+sudo rm    python3-config
+
+# Recreate Python3 links -> 3.7
+
+sudo ln -s ../../../Library/Frameworks/Python.framework/Versions/3.7/bin/2to3   2to3
+sudo ln -s ../../../Library/Frameworks/Python.framework/Versions/3.7/bin/idle3   idle3
+sudo ln -s ../../../Library/Frameworks/Python.framework/Versions/3.7/bin/pip3   pip3
+sudo ln -s ../../../Library/Frameworks/Python.framework/Versions/3.7/bin/pydoc3   pydoc3
+sudo ln -s ../../../Library/Frameworks/Python.framework/Versions/3.7/bin/python3   python3
+sudo ln -s ../../../Library/Frameworks/Python.framework/Versions/3.7/bin/python3-config   python3-config
+
+# list Python3.7 links
+cd /usr/local/bin/; ls -l /usr/local/bin | grep '../Library/Frameworks/Python.framework/Versions/3.7' | awk '{print $9}' | tr -d @ | xargs ls -l

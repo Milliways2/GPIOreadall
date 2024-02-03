@@ -1,0 +1,2 @@
+cat /sys/class/leds/led0/trigger
+echo heartbeat | sudo tee /sys/class/leds/led0/trigger

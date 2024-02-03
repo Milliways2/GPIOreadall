@@ -1,0 +1,5 @@
+#!/bin/bash
+#Replace ssh host keys
+# 2021-04-04
+cd /etc/ssh
+sudo tar xzf /home/pi/SshKeys.tgz

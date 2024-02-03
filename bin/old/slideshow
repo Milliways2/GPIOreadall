@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# http//:www.techrepublic.com/blog/linux-and-open-photo=slideshows-with-as-little-sostware-as-possible
+PHOTODIR=$1
+INTERVAL=15
+fbi -a -noverbose -t $INTERVAL `find $PHOTODIR -iname "*.jpg" | sort`
+#fbi -a -t $INTERVAL `find $PHOTODIR -iname "*.jpg" | sort`

@@ -1,0 +1,8 @@
+# Reports of networking systems
+systemctl status --full systemd-networkd
+systemctl status --full systemd-resolved.service
+systemctl status --full dhcpcd
+systemctl status --full wpa_supplicant.service
+systemctl status --full wpa_supplicant@wlan0.service
+systemctl status --full dbus.service
+systemctl status --full networking

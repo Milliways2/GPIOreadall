@@ -3,7 +3,8 @@
 
 GPIOreadall has the advantage of displaying the ACTUAL programmed GPIO function set by Device Tree on boot rather than the default.
 
-GPIOreadall runs on all Pi models with 40 pin expansion header, including Pi4 and Raspberry Pi Model B Rev 2 with 26 pin expansion header (although currently untested on Pi5).
+GPIOreadall runs on all Pi models with 40 pin expansion header, including Pi4, Pi5 and Raspberry Pi Model B Rev 2 with 26 pin expansion header.
+The Pi5 version is slightly different (because it doesn't know mode or value of unallocated pins which are show as blank).
 
 GPIOreadall runs on Raspberry Pi OS Stretch, Buster, Bullseye and Bookworm (32 or 64 bit) and requires no additional libraries.
 

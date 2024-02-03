@@ -1,0 +1,12 @@
+#! /bin/sh
+
+# 2020-10-08
+
+# Show applications installed by User
+
+# find apt history (using apthist.sh)
+# Remove '--' dividers
+# Filter to exclude upgrades
+
+# apthist.sh | tac | sed '/apt .*upgrade/{N;d;}' | tac
+apthist.sh | tac | sed -e '/^--/d' -e '/apt .*upgrade/{N;d;}' | tac

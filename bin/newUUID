@@ -1,0 +1,4 @@
+#! /bin/sh
+# 2019-09-02
+
+sudo tune2fs /dev/mmcblk0p2 -U random

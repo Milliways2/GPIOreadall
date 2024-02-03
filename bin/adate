@@ -1,0 +1,13 @@
+#! /usr/bin/env python3
+#2019-07-28
+"""
+Rename a file by appending the modification date to the file name
+2015-10-27
+"""
+import sys, os, time
+
+for infile in sys.argv[1:]:
+	splitpath = os.path.splitext(infile)
+	ltime = time.localtime(os.stat(infile).st_mtime)
+	newpath = '%s_%d%02d%02d%s' % (splitpath[0], ltime.tm_year, ltime.tm_mon, ltime.tm_mday, splitpath[1])
+	os.rename(infile, newpath)

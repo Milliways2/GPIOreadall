@@ -7,14 +7,12 @@
 # 2023-01-16    Include PROGNAME, LIBNAME in border; fix formatting
 # 2023-11-25    pinctrl (for Bookworm)
 # 2024-01-16    Bookworm & earlier combined program
-# 2024-01-31    Pi5 - pinctrl changes
-# 2024-02-03    Pi5 - unknown pin value
 
 """
 Read all GPIO
 This version for Bookworm/pinctrl or raspi-gpio debug tool
 """
-# Bookworm still has raspi-gpio but it has changed (and does not work on Pi5)
+# Bookworm still has raspi-gpio but it has changed (and reportedly does not work on Pi5)
 import sys, os, time
 import subprocess
 LIBNAME='pinctrl'
@@ -96,10 +94,7 @@ def pin_state(g):
     else:   # pinctrl
         paras = result.split('//')
         name = paras[1].split('=')[0].strip()
-        if name.startswith("PIN"):
-            name = name.split('/')[1]    # name from last field
-        else:
-            name = name.split('/')[0]    # name from first field
+        name = name.split('/')[0]    # name from last field
         fname = paras[1].split('=')[-1].strip()
         paras = paras[0].split()
         value = 1 if paras[-1] == 'hi' else 0
@@ -113,9 +108,6 @@ def pin_state(g):
                 mode = 'IN v'
         elif paras[1] == 'op':
             mode = 'OUT'
-        elif paras[1] == 'no':
-            mode = ' '
-            value = ' '
         else:
             level = paras[1][-1]
             mode = 'ALT' + level

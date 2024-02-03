@@ -1,0 +1,2 @@
+#!/bin/bash
+apt search $1 | grep  --colour=auto $1

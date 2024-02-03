@@ -1,26 +1,15 @@
 #! /usr/bin/env python3
-# 2021-04-02
-# 2021-04-13    Fix Wrong model for Old Style revision codes
-# 2021-12-20    Improve Old Style revision codes; ignore unwanted status bits
-# 2022-03-25    Zero 2 W
-# 2022-04-07    typo
-# 2023-01-16    Include PROGNAME, LIBNAME in border; fix formatting
 # 2023-11-25    pinctrl (for Bookworm)
-# 2024-01-16    Bookworm & earlier combined program
-# 2024-01-31    Pi5 - pinctrl changes
-# 2024-02-03    Pi5 - unknown pin value
 
 """
 Read all GPIO
-This version for Bookworm/pinctrl or raspi-gpio debug tool
+This version for Bookworm/pinctrl
 """
-# Bookworm still has raspi-gpio but it has changed (and does not work on Pi5)
 import sys, os, time
 import subprocess
 LIBNAME='pinctrl'
-PROGNAME='gpioreadall'
+PROGNAME='gpioreadall5'
 
-MODES=["IN", "OUT", "ALT5", "ALT4", "ALT0", "ALT1", "ALT2", "ALT3"]
 HEADER = ('3.3v', '5v', 2, '5v', 3, 'GND', 4, 14, 'GND', 15, 17, 18, 27, 'GND', 22, 23, '3.3v', 24, 10, 'GND', 9, 25, 11, 8, 'GND', 7, 0, 1, 5, 'GND', 6, 12, 13, 'GND', 19, 16, 26, 20, 'GND', 21)
 
 # https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes
@@ -67,61 +56,30 @@ def pin_state(g):
     Return "state" of BCM g
     Return is tuple (name, mode, value)
     """
-    global LIBNAME
-    try:
-        result = subprocess.run(['pinctrl', 'get', ascii(g)], stdout=subprocess.PIPE).stdout.decode('utf-8')
-    except: # fall back to raspi-gpio
-        LIBNAME='raspi-gpio'
-        result = subprocess.run(['raspi-gpio', 'get', ascii(g)], stdout=subprocess.PIPE).stdout.decode('utf-8')
-        D = {}  # Convert output of raspi-gpio get to dict for convenience
-        paras = result.split()
-        for par in paras[2:] :
-            p, v = par.split('=')
-            if (v.isdigit()):
-                D[p] = int(v)
-            else:
-                D[p] = v
+    result = subprocess.run(['pinctrl', 'get', ascii(g)], stdout=subprocess.PIPE).stdout.decode('utf-8')
 
-        if(D['fsel'] < 2): # i.e. IN or OUT
-            name = 'GPIO{}'.format(g)
-        else:
-            name = D['func']
-        mode = MODES[D['fsel']]
-        if(D['fsel'] == 0 and 'pull' in D):
-            if(D['pull'] == 'UP'):
-                mode = 'IN ^'
-            if(D['pull'] == 'DOWN'):
-                mode = 'IN v'
-        value = D['level']
-    else:   # pinctrl
-        paras = result.split('//')
-        name = paras[1].split('=')[0].strip()
-        if name.startswith("PIN"):
-            name = name.split('/')[1]    # name from last field
-        else:
-            name = name.split('/')[0]    # name from first field
-        fname = paras[1].split('=')[-1].strip()
-        paras = paras[0].split()
-        value = 1 if paras[-1] == 'hi' else 0
+    paras = result.split('//')
+    name = paras[1].split('=')[0].strip()
+    name = name.split('/')[0]    # name from last field
+    fname = paras[1].split('=')[-1].strip()
+    paras = paras[0].split()
+    value = 1 if paras[-1] == 'hi' else 0
     
-        mode = 'UNKNOWN'
-        if paras[1] == 'ip':
-            mode = 'IN'
-            if paras[-3] == 'pu':
-                mode = 'IN ^'
-            if paras[-3] == 'pd':
-                mode = 'IN v'
-        elif paras[1] == 'op':
-            mode = 'OUT'
-        elif paras[1] == 'no':
-            mode = ' '
-            value = ' '
-        else:
-            level = paras[1][-1]
-            mode = 'ALT' + level
-            name = fname    # if not I/O function name  from last field
+    mode = 'UNKNOWN'
+    if paras[1] == 'ip':
+        mode = 'IN'
+        if paras[-3] == 'pu':
+            mode = 'IN ^'
+        if paras[-3] == 'pd':
+            mode = 'IN v'
+    elif paras[1] == 'op':
+        mode = 'OUT'
+    else:
+        level = paras[1][-1]
+        mode = 'ALT' + level
+        name = fname    # if not I/O function name  from last field
         
-    return name, mode, value  
+    return name, mode, value        
 
 def print_gpio(pin_state):
     """

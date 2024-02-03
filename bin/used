@@ -1,0 +1,16 @@
+#! /bin/bash
+# 2021-02-06
+# Print directory usage - sorted by size
+
+if [ $# -eq 0 ] ; then
+	UDIR='.'
+else
+	UDIR=$1
+fi
+
+if [ $UDIR == '/' ]; then
+	# exclude virtual directories, mount points etc which don't physically exist
+	sudo du -hd1 --exclude proc --exclude run --exclude sys  --exclude dev  --exclude boot --exclude mnt  --exclude media $UDIR | sort -h
+else
+	sudo du -hd1 $UDIR | sort -h
+fi

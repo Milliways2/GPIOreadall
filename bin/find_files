@@ -1,0 +1,33 @@
+#! /bin/bash
+# find files containing string
+# Either 'C' 'Py' files or ALL
+# 2021-09-24
+# 2021-11-04
+
+SEARCH=$HOME	# Directory to search recursively
+# FILETYPE='C'
+# FILETYPE='Py'
+FILETYPE='All'
+
+if [ $# -eq 0 ] ; then
+	echo "Usage $(basename $0) string-to-find [path] [File type C or Py (default All)]"
+	exit
+fi
+if [ $# -gt 1 ] ; then
+	SEARCH="$2"
+fi
+if [ $# -gt 2 ] ; then
+	FILETYPE="$3"
+fi
+
+echo "Searching" $SEARCH
+echo "For $1"
+echo "Files of type $FILETYPE"
+
+if [ $FILETYPE = "C" ]; then
+	grep -lr --include=\*.{c*,h}  --exclude-dir=Library --exclude-dir=Images $SEARCH -e $1
+elif [ $FILETYPE = "Py" ]; then
+	grep -lr --include=\*.py  --exclude-dir=Library --exclude-dir=Images $SEARCH -e $1
+else
+	grep -lr --include=\*  --exclude-dir=Library --exclude-dir=Images $SEARCH -e $1
+fi

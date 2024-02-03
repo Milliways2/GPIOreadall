@@ -1,0 +1,22 @@
+#!/bin/bash
+# script to turn PWR LED ON/OFF
+# PWRLED or PWRLED OFF turns LED off
+# PWRLED anything turns LED ON
+# 2023-05-06
+
+ONOFF="$1"
+if [ "${ONOFF}" = "" ]; then
+ONOFF="0"
+else 
+if [ "${ONOFF}" = "OFF" ]; then
+ONOFF="0"
+else 
+ONOFF="255"
+fi
+fi
+
+if [ -e /sys/devices/platform/leds/leds/PWR ]; then
+echo $ONOFF | sudo tee /sys/devices/platform/leds/leds/PWR/brightness  > /dev/null
+else	# for older OS without leds/PWR
+echo $ONOFF | sudo tee /sys/devices/platform/leds/leds/led1/brightness  > /dev/null
+fi

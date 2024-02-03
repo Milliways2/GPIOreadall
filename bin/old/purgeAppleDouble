@@ -1,0 +1,13 @@
+#!/bin/bash
+# script to purge .AppleDouble
+# Ian Binnie 2018-06-24
+#
+if [ $# -eq 0 ] ; then
+	DIR=$(pwd)
+else
+	DIR=$1
+fi
+# echo "$DIR"
+find "$DIR" -name \.AppleDouble -exec sudo rm -rf {} \; 2>/dev/null
+find "$DIR" -name "Network Trash Folder" -exec sudo rm -rf {} \; 2>/dev/null
+

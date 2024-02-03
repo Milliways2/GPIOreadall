@@ -1,0 +1,9 @@
+#!/bin/bash
+#PBackup ssh host keys & config
+# 2021-04-04
+cd /etc/ssh
+#PBackup ssh host keys
+sudo tar czf /home/pi/SshKeys.tgz *key *.pub moduli
+#PBackup ssh config
+cd /etc/ssh
+sudo tar czf /home/pi/SshConf.tgz *config

@@ -1,0 +1,87 @@
+#!/bin/bash
+
+errexit()
+{
+  echo ""
+  echo "$1"
+  echo ""
+  exit 1
+}
+
+if [ $(id -u) -ne 0 ]; then
+  errexit "Must be run as root user: sudo $0"
+fi
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" != "buster" ]; then
+  errexit "Unsupported operating system: ${OSVER}"
+fi
+echo ""
+echo -n "Ok to upgrade Buster to Bullseye (y/n)? "
+while read -r -n 1 -s answer; do
+  if [[ ${answer} = [yYnN] ]]; then
+    echo "${answer}"
+    if [[ ${answer} = [yY] ]]; then
+      break
+    else
+      errexit "Aborted"
+    fi
+  fi
+done
+echo ""
+
+if [ -e /etc/apt/listchanges.conf ]; then
+  sed -i 's/frontend=pager/frontend=text/' /etc/apt/listchanges.conf
+fi
+apt-get -y update
+apt-get -y upgrade
+apt-get -y dist-upgrade
+apt-get -y update
+apt-get -y autoremove
+apt-get -y clean
+if [ -e /etc/apt/listchanges.conf ]; then
+  sed -i 's/frontend=text/frontend=pager/' /etc/apt/listchanges.conf
+fi
+
+if [ "$(uname -m)" = "armv7l" ]; then
+  sed -i 's|^deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi$|deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi|' /etc/apt/sources.list
+  sed -i 's|^deb http://archive.raspberrypi.org/debian/ buster main$|deb http://archive.raspberrypi.org/debian/ bullseye main|' /etc/apt/sources.list.d/raspi.list
+elif [ "$(uname -m)" = "aarch64" ]; then
+  sed -i 's|^deb http://deb.debian.org/debian buster main contrib non-free$|deb http://deb.debian.org/debian bullseye main contrib non-free|' /etc/apt/sources.list
+  sed -i 's|^deb http://deb.debian.org/debian-security/ buster/updates main contrib non-free$|# deb http://deb.debian.org/debian-security/ buster/updates main contrib non-free|' /etc/apt/sources.list
+  sed -i 's|^deb http://deb.debian.org/debian buster-updates main contrib non-free$|deb http://deb.debian.org/debian bullseye-updates main contrib non-free|' /etc/apt/sources.list
+  sed -i 's|^deb http://archive.raspberrypi.org/debian/ buster main$|deb http://archive.raspberrypi.org/debian/ bullseye main|' /etc/apt/sources.list.d/raspi.list
+else
+  errexit "Unsupported archetecture: $(uname -m)"
+fi
+
+if [ -e /etc/apt/listchanges.conf ]; then
+  sed -i 's/frontend=pager/frontend=text/' /etc/apt/listchanges.conf
+fi
+apt-get -y update
+apt-get -y upgrade
+apt-get -y install gcc-8-base
+apt-get -y dist-upgrade
+apt-get -y autoremove
+dpkg --configure -a
+apt -y update
+apt -y full-upgrade
+apt -y autoremove
+apt -y clean
+if [ -e /etc/apt/listchanges.conf ]; then
+  sed -i 's/frontend=text/frontend=pager/' /etc/apt/listchanges.conf
+fi
+
+echo ""
+echo "Reboot required"
+echo ""
+echo -n "Reboot now (y/n)? "
+while read -r -n 1 -s answer; do
+  if [[ ${answer} = [yYnN] ]]; then
+    echo "${answer}"
+    if [[ ${answer} = [yY] ]]; then
+      shutdown -r now
+    fi
+    break
+  fi
+done
+echo ""

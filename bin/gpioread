@@ -1,0 +1,76 @@
+#! /usr/bin/env python3
+# 2021-03-23
+# 2021-04-13    Fix Wrong model for Old Style revision codes
+# 2021-12-21    Fix Old Style crashed if warranty flag set
+# 2023-01-17    Include PROGNAME, LIBNAME in border; fix formatting
+"""
+Read all GPIO
+This version for Pi.GPIO - an enhanced RPi.GPIO
+This can be downloaded using git clone https://github.com/Milliways2/Pi.GPIO.git
+Code and constants imported from gpioread.py
+"""
+import sys, os, time
+import Pi.GPIO as GPIO
+import gpioread
+from gpioread import *
+
+LIBNAME='Pi.GPIO'
+PROGNAME='gpioread'
+
+def get_pull(g):
+    """
+    Determine "pull" of GPIO
+    """
+    pud = get_pullupdn(g)
+    if(pud == 1): return('IN ^')
+    if(pud == 2): return('IN v')
+    return('IN')
+
+def pin_state(g):
+    """
+    Return GPIO state for BCM g as tuple(Name, Mode, Value)
+    """
+    mode = get_alt(g)
+    modename = MODES[mode]
+    if(mode==0 and BCM2711):  # Input on Pi4 etc using BCM2711
+        try:
+            modename = get_pull(g)  # modifies NAME to show pull
+        except:
+            modename = 'IN' # no pull found
+    if(mode<2): # i.e. IN or OUT
+        name = 'GPIO{}'.format(g)
+    else:
+        name = FUNCTION[MODES[mode]][g]
+    return name, modename, read_gpio(g)
+
+def main():
+    global BCM2711
+    global get_pullupdn, get_alt, read_gpio
+    # module independent references
+    get_alt = GPIO.get_alt
+    read_gpio =  GPIO.read_gpio
+    get_pullupdn = GPIO.get_pullupdn
+    GPIO.setmode(GPIO.BCM)
+
+    rev = int(GPIO.RPI_INFO['REVISION'], 16)
+
+    if(rev & 0x800000):   # New Style
+        TYPE = (rev&0x00000FF0)>>4
+        PROC = (rev&0x0000F000)>>12
+        BCM2711 = (PROC==3)
+    else:   # Old Style
+        rev &= 0x1F
+        MM = [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3, 6, 2, 3, 6, 2]
+        TYPE = MM[rev]
+        BCM2711 = 0
+
+    # ensure gpioread globals are initialised
+    gpioread.rev = rev
+    gpioread.TYPE = TYPE
+    gpioread.LIBNAME = LIBNAME
+    gpioread.PROGNAME = PROGNAME
+
+    print_gpio(pin_state)   # call gpioread.print_gpio() using local pin_state())
+
+if __name__ == '__main__':
+	main()

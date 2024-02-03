@@ -1,0 +1,15 @@
+#! /bin/sh
+# Check status of networking
+checkactive () {
+if [ $(systemctl is-active $1) = 'active' ]; then
+	echo $1 'active'
+fi
+}
+checkactive 'systemd-networkd'
+checkactive 'dhcpcd'
+checkactive 'NetworkManager'
+checkactive 'wpa_supplicant'
+
+echo
+echo "Network devices"
+ls /sys/class/net/

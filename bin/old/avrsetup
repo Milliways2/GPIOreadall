@@ -1,0 +1,48 @@
+#!/bin/bash
+
+do328 () {
+  echo "Initialising an ATmega328p ..."
+  avrdude -qq -c gpio -p atmega328p -U lock:w:0x3F:m \
+	-U efuse:w:0x07:m -U lfuse:w:0xE7:m -U hfuse:w:0xD9:m
+  if [ $? = 0 ]; then
+    echo "Looks all OK - Happy ATmega programming!"
+  fi
+  exit 0
+}
+
+do168 () {
+  echo "Initialising an ATmega168 ..."
+  avrdude -qq -c gpio -p atmega168 -U lock:w:0x3F:m \
+	-U efuse:w:0x00:m -U lfuse:w:0xE7:m -U hfuse:w:0xDF:m
+  if [ $? = 0 ]; then
+    echo "Looks all OK - Happy ATmega programming!"
+  fi
+  exit 0
+}
+
+
+echo    ""
+echo    "Initialising a new ATmega microcontroller for use with the Gertboard."
+
+while true; do
+  echo    ""
+  echo    "Make sure there is a new ATmega chip plugged in, and press"
+  echo -n ".. 1 for an ATmega328p or 2 for an ATmega168: "
+
+  read chip
+
+  case "$chip" in
+    1*)
+      do328
+      ;;
+    2*)
+      do168
+      ;;
+    *)
+      echo "Invalid choice"
+      ;;
+  esac
+
+  echo "OK... chip is $chip"
+
+done

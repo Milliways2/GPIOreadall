@@ -1,0 +1,9 @@
+#!/bin/bash
+# script to turn fan ON/OFF
+ONOFF="$1"
+if [ "${ONOFF}" = "" ]; then
+ONOFF="dh"
+else 
+ONOFF="dl"
+fi
+raspi-gpio set 27 $ONOFF
